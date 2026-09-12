@@ -1,0 +1,27 @@
+# Build output
+bin/
+obj/
+[Bb]uild/
+[Aa]rtifacts/
+
+# User-specific files
+*.user
+*.suo
+.vs/
+.idea/
+.vscode/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+*.secret
+
+# Logs and local diagnostics
+*.log
+logs/
+test-results/
+
+# OS files
+.DS_Store
+Thumbs.db
