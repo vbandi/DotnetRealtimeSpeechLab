@@ -4,6 +4,10 @@ A .NET 10 console lab for experimenting with real-time speech APIs, streaming au
 
 This is an educational comparison project. It keeps provider adapters side by side so you can study audio capture, streaming events, function calling, cancellation, playback, and provider-specific tradeoffs in a small codebase.
 
+![.NET Real-Time Speech Lab console showing live provider selection, audio controls, transcripts, and tool calls](docs/images/realtime-speech-lab.png)
+
+The screenshot shows the lab in action: select a live provider, speak through the microphone, watch transcripts arrive, and observe tool calls and results as they happen.
+
 ## Providers
 
 - **Google Gemini Live** for bidirectional native-audio sessions
@@ -131,7 +135,7 @@ dotnet run -- elevenlabs
 ## Provider Differences
 
 | Feature | Gemini Live | OpenAI Realtime | GPT-Live 1 | ElevenLabs Agents |
-|---------|-------------|-----------------|-------------------|
+|---------|-------------|-----------------|-----------|-------------------|
 | Input sample rate | 16kHz | 24kHz | 24kHz | 16kHz |
 | Output sample rate | 24kHz | 24kHz | 24kHz | 16kHz (configured) |
 | Voice catalog | 30 documented Gemini native audio voices | Fixed SDK voice set (`alloy`, `ash`, `ballad`, `cedar`, `coral`, `echo`, `marin`, `sage`, `shimmer`, `verse`) | Explicit Live `BuiltInVoice` catalog, including Live-specific voices such as `quartz`, `ripple`, `vesper`, `willow`, `stone`, `gleam`, and `meridian` | Existing env-configured voice ID |
@@ -171,19 +175,6 @@ Try saying:
 - "Give me a random number between 1 and 100"
 - "List my notes"
 
-## Output Format
-
-```
-[00:05.234] 🎤 User: add two random numbers between 1 and 1000
-[00:06.100] 🔧 Tool: RandomNumber({"min":1,"max":1000})
-[00:06.112] ✅ Result: 137 (4ms)
-[00:06.180] 🔧 Tool: RandomNumber({"min":1,"max":1000})
-[00:06.191] ✅ Result: 842 (3ms)
-[00:06.240] 🔧 Tool: Add({"a":137,"b":842})
-[00:06.252] ✅ Result: 979 (2ms)
-[00:06.300] 🤖 AI: 137 plus 842 equals 979.
-```
-
 ## Timing Metrics
 
 The experiment tracks:
@@ -195,17 +186,31 @@ The old response-latency display is intentionally disabled because Live transcri
 
 ## Architecture
 
-```
-┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
-│  AudioCapture   │────▶│  GeminiLiveRunner │────▶│  AudioPlayback  │
-│  (16kHz PCM)    │     │  (WebSocket)      │     │  (24kHz PCM)    │
-└─────────────────┘     └──────────────────┘     └─────────────────┘
-                               │
-                               ▼
-                        ┌──────────────────┐
-                        │    CliTools      │
-                        │  (AI Functions)  │
-                        └──────────────────┘
+`Program.cs` owns provider selection and lifecycle. It creates one runner at a time, sizes the audio devices from that runner's sample rates, and wires shared transcript, audio, interruption, and tool events through the common `IVoiceRunner` interface.
+
+```mermaid
+flowchart LR
+  Mic[Microphone] --> Capture[AudioCapture]
+  Capture --> Host[Program.cs\nselection and lifecycle]
+  Host --> Selected[Selected IVoiceRunner]
+  Selected --> Playback[AudioPlayback]
+  Selected --> Console[Console status\nand transcripts]
+
+  Tools[CliTools] --> Discovery[ToolDiscovery\nAIFunction schemas]
+  Discovery --> Host
+  Host --> Selected
+
+  Selected -. implements .-> Gemini[GeminiLiveRunner]
+  Selected -. implements .-> OpenAI[OpenAIRealtimeRunner]
+  Selected -. implements .-> GPT[GptLiveRunner]
+  Selected -. implements .-> Eleven[ElevenLabsAgentRunner]
+
+  Gemini --> GeminiAPI[(Gemini Live)]
+  OpenAI --> OpenAIAPI[(OpenAI Realtime)]
+  GPT --> LiveAPI[(GPT-Live 1)]
+  GPT --> Protocol[GptLiveProtocol]
+  Eleven --> AgentAPI[ElevenLabsAgentApiClient]
+  AgentAPI --> ElevenAPI[(ElevenLabs Agents)]
 ```
 
 ## Files

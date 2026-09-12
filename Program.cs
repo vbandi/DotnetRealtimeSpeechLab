@@ -698,12 +698,8 @@ class Program
 
         runner.Interrupted += (s, e) =>
         {
-            lock (_consoleLock)
-            {
-                _isAiSpeaking = false;
-                playback.ClearBuffer();
-                WriteTimestamped("⚡", "Interrupted (barge-in)", ConsoleColor.Magenta);
-            }
+            playback.ClearBuffer();
+            WriteTimestamped("⚡", "Interrupted (barge-in)", ConsoleColor.Magenta);
         };
 
         runner.ThinkingReceived += (s, text) =>
@@ -816,6 +812,13 @@ class Program
     {
         lock (_consoleLock)
         {
+            if (_isUserSpeaking || _isAiSpeaking)
+            {
+                Console.WriteLine();
+                _isUserSpeaking = false;
+                _isAiSpeaking = false;
+            }
+
             Console.ForegroundColor = color;
             Console.WriteLine($"[{GetTimestamp()}] {emoji} {message}");
             Console.ResetColor();
