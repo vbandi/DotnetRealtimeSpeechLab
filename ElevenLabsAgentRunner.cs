@@ -54,7 +54,7 @@ public sealed class ElevenLabsAgentRunner : IVoiceRunner
         _apiKey = apiKey;
         _agentId = agentId;
         _debugEvents = string.Equals(
-            Environment.GetEnvironmentVariable("FASTVOICE_DEBUG_EVENTS"),
+            Environment.GetEnvironmentVariable("SPEECH_LAB_DEBUG_EVENTS"),
             "true",
             StringComparison.OrdinalIgnoreCase);
     }

@@ -34,8 +34,8 @@ class Program
     private static string? _elevenLabsAgentId;
     private static string? _elevenLabsVoiceId;
     private static string _elevenLabsAgentName = DefaultElevenLabsAgentName;
-    private static FastVoiceSettingsStore? _settingsStore;
-    private static FastVoiceSettings _settings = new();
+    private static SpeechLabSettingsStore? _settingsStore;
+    private static SpeechLabSettings _settings = new();
     private static bool _playbackStopped;
 
     static async Task<int> Main(string[] args)
@@ -58,7 +58,7 @@ class Program
         _elevenLabsAgentId = Environment.GetEnvironmentVariable("ELEVENLABS_AGENT_ID");
         _elevenLabsVoiceId = Environment.GetEnvironmentVariable("ELEVENLABS_VOICE_ID");
         _elevenLabsAgentName = DefaultElevenLabsAgentName;
-        _settingsStore = new FastVoiceSettingsStore();
+        _settingsStore = new SpeechLabSettingsStore();
         _settings = _settingsStore.Load();
 
         if (string.IsNullOrEmpty(_geminiApiKey) && string.IsNullOrEmpty(_openaiApiKey) && string.IsNullOrEmpty(_elevenLabsApiKey))
@@ -530,7 +530,7 @@ class Program
             || arg.Equals("elevenlabs", StringComparison.OrdinalIgnoreCase)
             || arg.Equals("eleven", StringComparison.OrdinalIgnoreCase));
 
-        providerToken ??= Environment.GetEnvironmentVariable("FASTVOICE_PROVIDER");
+        providerToken ??= Environment.GetEnvironmentVariable("SPEECH_LAB_PROVIDER");
 
         if (string.IsNullOrWhiteSpace(providerToken))
         {
@@ -790,7 +790,7 @@ class Program
     private static bool ShouldShowLiveEvent(string eventType)
     {
         if (string.Equals(
-            Environment.GetEnvironmentVariable("FASTVOICE_LIVE_EVENTS"),
+            Environment.GetEnvironmentVariable("SPEECH_LAB_LIVE_EVENTS"),
             "full",
             StringComparison.OrdinalIgnoreCase))
         {

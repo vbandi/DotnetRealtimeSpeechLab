@@ -153,7 +153,7 @@ public static class GptLiveProtocol
         return JsonSerializer.Serialize(new
         {
             type = "session.start",
-            event_id = "fastvoice_session_start",
+            event_id = "speech_lab_session_start",
             session
         });
     }
@@ -172,7 +172,7 @@ public static class GptLiveProtocol
         return JsonSerializer.Serialize(new
         {
             type = muted ? "session.input_audio.mute" : "session.input_audio.unmute",
-            event_id = $"fastvoice_mute_{(muted ? "on" : "off")}_{Guid.NewGuid():N}"
+            event_id = $"speech_lab_mute_{(muted ? "on" : "off")}_{Guid.NewGuid():N}"
         });
     }
 
@@ -181,7 +181,7 @@ public static class GptLiveProtocol
         return JsonSerializer.Serialize(new
         {
             type = "response.item.create",
-            event_id = $"fastvoice_tool_result_{Guid.NewGuid():N}",
+            event_id = $"speech_lab_tool_result_{Guid.NewGuid():N}",
             item = new
             {
                 type = "function_call_output",
@@ -196,7 +196,7 @@ public static class GptLiveProtocol
         return JsonSerializer.Serialize(new
         {
             type = "response.create",
-            event_id = $"fastvoice_response_continue_{Guid.NewGuid():N}"
+            event_id = $"speech_lab_response_continue_{Guid.NewGuid():N}"
         });
     }
 

@@ -195,7 +195,7 @@ public sealed class GptLiveRunner : IVoiceRunner, IGptLiveControls
             _closeRequested = true;
             try
             {
-                await SendJsonAsync("{\"type\":\"session.close\",\"event_id\":\"fastvoice_close\"}", CancellationToken.None)
+                await SendJsonAsync("{\"type\":\"session.close\",\"event_id\":\"speech_lab_close\"}", CancellationToken.None)
                     .ConfigureAwait(false);
                 if (_closedTcs != null)
                 {
@@ -312,7 +312,7 @@ public sealed class GptLiveRunner : IVoiceRunner, IGptLiveControls
                         JsonSerializer.Serialize(new
                         {
                             type = "session.thinking.append",
-                            event_id = $"fastvoice_responses_cancel_{Guid.NewGuid():N}",
+                            event_id = $"speech_lab_responses_cancel_{Guid.NewGuid():N}",
                             delegation_id = (string?)null,
                             content = "The backend task was canceled by the operator. Do not report a result for it."
                         }),
@@ -1005,7 +1005,7 @@ public sealed class GptLiveRunner : IVoiceRunner, IGptLiveControls
         CancellationToken cancellationToken)
     {
         var boundedContent = content.Length > 1800 ? content[..1800] : content;
-        var eventId = $"fastvoice_{Guid.NewGuid():N}";
+        var eventId = $"speech_lab_{Guid.NewGuid():N}";
         await SendJsonAsync(JsonSerializer.Serialize(new
         {
             type,
@@ -1085,7 +1085,7 @@ public sealed class GptLiveRunner : IVoiceRunner, IGptLiveControls
         //     return root.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
         // }
 
-        var mode = Environment.GetEnvironmentVariable("FASTVOICE_LIVE_EVENTS")?.ToLowerInvariant();
+        var mode = Environment.GetEnvironmentVariable("SPEECH_LAB_LIVE_EVENTS")?.ToLowerInvariant();
         return mode switch
         {
             "full" => GptLiveProtocol.BuildFullPayload(root),

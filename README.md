@@ -64,8 +64,8 @@ dotnet run -- --self-test
 Start the lab after setting the provider key in the process environment. The key is never printed or written to diagnostics:
 
 ```powershell
-$env:FASTVOICE_PROVIDER = "gpt-live"
-$env:FASTVOICE_LIVE_EVENTS = "safe" # safe (milestones), full (protocol events)
+$env:SPEECH_LAB_PROVIDER = "gpt-live"
+$env:SPEECH_LAB_LIVE_EVENTS = "safe" # safe (milestones), full (protocol events)
 dotnet run
 ```
 
@@ -121,7 +121,7 @@ Saved voice and tool settings are written to a local per-user file at `%LOCALAPP
 For scripted/non-interactive runs, you can explicitly select provider up front:
 
 ```powershell
-$env:FASTVOICE_PROVIDER = "gpt-live-responses" # gemini | openai | gpt-live-client | gpt-live-responses | elevenlabs
+$env:SPEECH_LAB_PROVIDER = "gpt-live-responses" # gemini | openai | gpt-live-client | gpt-live-responses | elevenlabs
 dotnet run
 
 # or pass provider as argument
@@ -163,6 +163,7 @@ The AI has access to these tools for fast reactions. `UserTextTranscription` is 
 ## Example Utterances
 
 Try saying:
+- "Add two random numbers between 1 and 1000"
 - "What's 25 plus 17?"
 - "What time is it?"
 - "Save a note: buy milk"
@@ -173,10 +174,14 @@ Try saying:
 ## Output Format
 
 ```
-[00:05.234] 🎤 User: what's twenty five plus seventeen
-[00:06.100] 🔧 Tool: Add({"a":25,"b":17})
-[00:06.112] ✅ Result: 42 (12ms)
-[00:06.150] 🤖 AI: Twenty-five plus seventeen equals forty-two.
+[00:05.234] 🎤 User: add two random numbers between 1 and 1000
+[00:06.100] 🔧 Tool: RandomNumber({"min":1,"max":1000})
+[00:06.112] ✅ Result: 137 (4ms)
+[00:06.180] 🔧 Tool: RandomNumber({"min":1,"max":1000})
+[00:06.191] ✅ Result: 842 (3ms)
+[00:06.240] 🔧 Tool: Add({"a":137,"b":842})
+[00:06.252] ✅ Result: 979 (2ms)
+[00:06.300] 🤖 AI: 137 plus 842 equals 979.
 ```
 
 ## Timing Metrics

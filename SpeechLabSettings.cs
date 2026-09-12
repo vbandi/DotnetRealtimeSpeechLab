@@ -2,7 +2,7 @@ using System.Text.Json;
 
 namespace DotnetRealtimeSpeechLab;
 
-public sealed class FastVoiceSettings
+public sealed class SpeechLabSettings
 {
     public string? OpenAIVoice { get; set; }
     public string? GeminiVoice { get; set; }
@@ -12,39 +12,39 @@ public sealed class FastVoiceSettings
     public List<string> UserTextTranscriptionModes { get; set; } = new();
 }
 
-public sealed class FastVoiceSettingsStore
+public sealed class SpeechLabSettingsStore
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         WriteIndented = true
     };
 
-    public FastVoiceSettingsStore(string? settingsPath = null)
+    public SpeechLabSettingsStore(string? settingsPath = null)
     {
         SettingsPath = settingsPath ?? GetDefaultSettingsPath();
     }
 
     public string SettingsPath { get; }
 
-    public FastVoiceSettings Load()
+    public SpeechLabSettings Load()
     {
         try
         {
             if (!File.Exists(SettingsPath))
             {
-                return new FastVoiceSettings();
+                return new SpeechLabSettings();
             }
 
             var json = File.ReadAllText(SettingsPath);
-            return JsonSerializer.Deserialize<FastVoiceSettings>(json, JsonOptions) ?? new FastVoiceSettings();
+            return JsonSerializer.Deserialize<SpeechLabSettings>(json, JsonOptions) ?? new SpeechLabSettings();
         }
         catch
         {
-            return new FastVoiceSettings();
+            return new SpeechLabSettings();
         }
     }
 
-    public void Save(FastVoiceSettings settings)
+    public void Save(SpeechLabSettings settings)
     {
         var directory = Path.GetDirectoryName(SettingsPath);
         if (!string.IsNullOrWhiteSpace(directory))

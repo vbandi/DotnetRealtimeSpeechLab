@@ -40,7 +40,7 @@ Sources checked:
 ## What This Spike Implements
 
 - Raw server-side WebSocket connection to `/v1/live/sessions` with `gpt-live-1` and 24 kHz PCM16.
-- Safe event summaries by default. `FASTVOICE_LIVE_EVENTS=safe` includes redacted metadata; `full` permits transcript content for intentional inspection but still redacts audio bytes. No audio is written to disk.
+- Safe event summaries by default. `SPEECH_LAB_LIVE_EVENTS=safe` includes redacted metadata; `full` permits transcript content for intentional inspection but still redacts audio bytes. No audio is written to disk.
 - Fragment-preserving transcript history with source timestamps and explicit resume-history assembly.
 - Separate local microphone gating, Live protocol mute, playback stop/clear, session close, and client-backend cancellation.
 - Client delegation with explicit delegation ID preservation, a task revision, an application-owned `gpt-5.6-luna` Responses backend using low reasoning, a controllable slow tool, local tool execution, and stale-result suppression after cancellation or close.
@@ -125,14 +125,14 @@ These were bounded connection/configuration checks, not tool-behavior or listeni
 
 ### Client delegation
 
-- Command: `GPT_LIVE_DELEGATION=client`, `FASTVOICE_PROVIDER=gpt-live`, `FASTVOICE_LIVE_EVENTS=safe`.
+- Command: `GPT_LIVE_DELEGATION=client`, `SPEECH_LAB_PROVIDER=gpt-live`, `SPEECH_LAB_LIVE_EVENTS=safe`.
 - Live startup accepted `delegation.type: client` and returned `session.started` in approximately **601 ms**.
 - Session `live_u0_EMfR5MaOS9uwm65nGiAZe` closed with `close_requested`; final usage was **16 seconds**.
 - No user speech or delegation was attempted in this smoke test.
 
 ### Responses delegation
 
-- Command: `GPT_LIVE_DELEGATION=responses`, `GPT_LIVE_RESPONSES_MODEL=gpt-5-mini`, `GPT_LIVE_RESPONSES_REASONING=low`, `FASTVOICE_PROVIDER=gpt-live`, `FASTVOICE_LIVE_EVENTS=safe`.
+- Command: `GPT_LIVE_DELEGATION=responses`, `GPT_LIVE_RESPONSES_MODEL=gpt-5-mini`, `GPT_LIVE_RESPONSES_REASONING=low`, `SPEECH_LAB_PROVIDER=gpt-live`, `SPEECH_LAB_LIVE_EVENTS=safe`.
 - Live startup accepted `delegation.type: responses` and returned `session.started` in approximately **753 ms**.
 - The startup payload confirmed the explicitly configured `gpt-5-mini` backend model, concise backend instructions, all **12** discovered function schemas, `tool_choice: auto`, and `parallel_tool_calls: true`. This was before the current per-mode default tool filtering; current sessions expose **11** tools by default because `UserTextTranscription` is opt-in.
 - Session `live_u1_EMfRdDbG6GStqZwcnP91D` closed with `close_requested`; final usage was **18 seconds**.
@@ -167,12 +167,12 @@ dotnet run -- --self-test
 For a future Live run, set `OPENAI_API_KEY` in the process environment without putting it in chat, source, or diagnostic files. Then use:
 
 ```powershell
-$env:FASTVOICE_PROVIDER = "gpt-live"
-$env:FASTVOICE_LIVE_EVENTS = "safe"
+$env:SPEECH_LAB_PROVIDER = "gpt-live"
+$env:SPEECH_LAB_LIVE_EVENTS = "safe"
 dotnet run
 ```
 
-The CLI has separate `M` microphone mute, `P` playback stop/resume, `X` backend cancellation, and `Q` graceful close controls. `FASTVOICE_LIVE_EVENTS=full` is an intentional transcript-content inspection mode; the default is summary-only. The provider screen exposes GPT-Live Client and GPT-Live Responses as separate choices, and the `V` voice picker is available for both branches.
+The CLI has separate `M` microphone mute, `P` playback stop/resume, `X` backend cancellation, and `Q` graceful close controls. `SPEECH_LAB_LIVE_EVENTS=full` is an intentional transcript-content inspection mode; the default is summary-only. The provider screen exposes GPT-Live Client and GPT-Live Responses as separate choices, and the `V` voice picker is available for both branches.
 
 ## Paid-Test Gate
 
